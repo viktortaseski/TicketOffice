@@ -1,0 +1,36 @@
+.seat {
+    min-width: 45px;
+    cursor: pointer;
+    user-select: none;
+    background: #f8f9fa;
+    transition: background-color 0.2s;
+}
+
+.seat.selected {
+    background-color: #198754;
+    /* bootstrap success */
+    color: white;
+}
+
+.seat:hover {
+    background-color: #0d6efd;
+    /* bootstrap primary */
+    color: white;
+}
+
+/* Divider under each logical row */
+.row-divider {
+    width: 100%;
+    border-top: 1px dashed #ccc;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+}
+
+/* Ensure flex-wrap naturally: */
+.seat-subrow {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+}

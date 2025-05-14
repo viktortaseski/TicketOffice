@@ -1,10 +1,10 @@
 import React from 'react';
 import Button from 'react-bootstrap/Button';
 
-const MyButton = (props) => {
+const MyButton = ({ text, onClick }) => {
     return (
-        <Button variant="primary" >
-            {props.text}
+        <Button variant="primary" onClick={onClick} >
+            {text}
         </Button>
     );
 };

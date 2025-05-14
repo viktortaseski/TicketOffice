@@ -46,33 +46,54 @@ router.get('/', async (req, res, next) => {
 });
 
 // Login existing user
-router.post('/login', async (req, res, next) => {
-    try {
-        const { email, password } = req.body;
-        if (!email || !password) {
-            return res.status(400).json({ message: 'Email and password are required.' });
-        }
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Email and password required' });
+    }
 
+    try {
         const user = await DB.getUserByEmail(email);
         if (!user || user.password !== password) {
-            return res.status(401).json({ message: 'Invalid email or password.' });
+            // in prod, use hashed passwords and bcrypt.compare()
+            return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        console.log('Login successful for user:', { id: user.id, });
+        // save minimal user info in session
+        req.session.user = {
+            id: user.id,
+            email: user.email,
+            username: user.username,
+            userType: user.userType
+        };
 
-        // On success, send user data (or a token)
-        return res.status(200).json({
-            message: 'Login successful.',
-            user: {
-                id: user.id,
-                email: user.email,
-                userType: user.userType
-            }
-        });
+        return res.json({ success: true, user: req.session.user });
     } catch (err) {
         console.error('Login error:', err);
-        next(err);
+        return res.status(500).json({ message: 'Server error' });
     }
 });
+
+// POST /api/users/logout
+router.post('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            console.error('Logout error:', err);
+            return res.status(500).json({ message: 'Could not log out' });
+        }
+        // clear the cookie on client
+        res.clearCookie('sid');
+        return res.json({ success: true });
+    });
+});
+
+// GET /api/users/me  → checks session
+router.get('/me', (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ message: 'Not authenticated' });
+    }
+    return res.json({ user: req.session.user });
+});
+
 
 module.exports = router;

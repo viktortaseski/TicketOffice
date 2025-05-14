@@ -27,6 +27,7 @@ const LoginPage = () => {
             if (response.ok) {
                 setSuccess(result.message || 'Login successful!');
                 // Wait 1 second so the user sees the success message:
+                localStorage.setItem('user', JSON.stringify(result.user));
                 setTimeout(() => {
                     // Make sure you have a Dashboard route defined,  
                     // otherwise this will just blank out your page.

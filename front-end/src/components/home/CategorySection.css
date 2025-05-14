@@ -1,0 +1,9 @@
+.category-item {
+    transition: background-color 0.2s ease;
+}
+
+.category-item:hover {
+    background-color: #f8f9fa;
+    /* Bootstrap’s $gray-100 */
+    cursor: pointer;
+}

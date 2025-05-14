@@ -1,0 +1,93 @@
+/* Backdrop */
+.alert-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+}
+
+/* Modal */
+.alert-modal {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+    padding: 10px;
+    position: relative;
+    width: 90%;
+    max-width: 400px;
+    animation: fadeIn 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Alert content */
+.alert-content {
+    text-align: center;
+    margin-top: 5px;
+    font-size: 1rem;
+    color: #333;
+}
+
+/* Close button (top right X) */
+.alert-close {
+    position: absolute;
+    top: -5px;
+    right: 0;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.alert-close:hover {
+    color: #000;
+}
+
+/* OK button */
+.alert-ok {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 6px;
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.alert-ok:hover {
+    background-color: #0056b3;
+}
+
+/* Variants */
+.alert-danger {
+    border-top: 6px solid #dc3545;
+}
+
+.alert-success {
+    border-left: 10px solid #28a745;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
