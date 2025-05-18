@@ -1,65 +1,57 @@
+// index.js
 const fs = require('fs');
+const path = require('path');
 const express = require('express');
 const session = require('express-session');
-const multer = require('multer');
+const cors = require('cors');
 require('dotenv').config();
+
 const app = express();
-const cors = require("cors")
-const path = require('path')
-const port = 8000;
+const port = process.env.PORT || 8000;
 
-// ensure ./uploads directory exists
+// ensure uploads dir
 const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
-}
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
 
+// Body parsers
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.use(express.json()); // for parsing application/json
-app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+// CORS – reflect origin & allow cookies
 app.use(cors({
-    methods: ["GET", "POST"],
-}))
+    origin: true,           // ← reflect the request Origin
+    credentials: true,      // ← allow session cookie
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type']
+}));
 
+// Session
 app.use(session({
-    name: 'sid',                                // name of the cookie
+    name: 'sid',
     secret: process.env.SESSION_SECRET || 'keyboard cat',
-    resave: false,                              // don’t save session if unmodified
-    saveUninitialized: false,                   // don’t create session until something stored
+    resave: false,
+    saveUninitialized: false,
     cookie: {
-        httpOnly: true,                           // JS can’t read cookie
-        secure: process.env.NODE_ENV === 'production', // only over HTTPS in prod
-        maxAge: 1000 * 60 * 60 * 2                // 2h
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 1000 * 60 * 60 * 2  // 2h
     }
 }));
 
+// Static uploads
+app.use('/uploads', express.static(uploadDir));
 
-const DB = require('./db/dbConn.js')
-const events = require("./routes/events.js");
-const users = require("./routes/users")
-const organizers = require('./routes/organizers');
-const checkoutRoutes = require('./routes/checkout');
-const ordersRoutes = require('./routes/orders');
 
-app.use('/events', events);
-app.use('/events', require('./routes/events.js'));
-
-app.use('/users', users);
+// Routes
+app.use('/events', require('./routes/events'));
 app.use('/users', require('./routes/users'));
+app.use('/organizers', require('./routes/organizers'));
+app.use('/api/orders', require('./routes/orders'));
+app.use('/api/payments', require('./routes/payments'));
+app.use('/api/tickets', require('./routes/tickets'));
 
-app.use('/organizers', organizers);
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/api/checkout', checkoutRoutes);
-app.use('/api/orders', ordersRoutes);
-
-
-
-
-app.get('/', (req, res) => {
-    res.send('Pozdrav, Hola, Hello!');
-});
+app.get('/', (req, res) => res.send('API is running'));
 
 app.listen(port, () => {
-    console.log(`Example app listening at http://localhost:${port}`);
+    console.log(`Server listening on http://localhost:${port}`);
 });
-

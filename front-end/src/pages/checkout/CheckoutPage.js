@@ -12,7 +12,9 @@ export default function CheckoutPage() {
     const { id } = useParams();
     const { state } = useLocation();
     const navigate = useNavigate();
+
     const selectedSeats = state?.selectedSeats || [];
+    const orderId = state?.orderId;
 
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -35,10 +37,13 @@ export default function CheckoutPage() {
     if (loading) return <div>Loading…</div>;
     if (error) return <div className="text-danger">Error: {error}</div>;
     if (!event) return <div>Event not found.</div>;
-    if (selectedSeats.length === 0) {
+    if (selectedSeats.length === 0 || !orderId) {
         return (
             <Container className="my-5">
-                <p>No seats selected. <a href={`/events/${id}/seats`}>Go back to choose seats.</a></p>
+                <p>
+                    No seats selected.{' '}
+                    <a href={`/events/${id}/seats`}>Go back to choose seats.</a>
+                </p>
             </Container>
         );
     }
@@ -63,9 +68,10 @@ export default function CheckoutPage() {
                     <Col md={7}>
                         <PaymentForm
                             eventId={event.id}
+                            orderId={orderId}
                             selectedSeats={selectedSeats}
                             total={total}
-                            onSuccess={orderId => navigate(`/confirmation/${orderId}`)}
+                            onSuccess={() => navigate(`/confirmation/${orderId}`)}
                         />
                     </Col>
                 </Row>

@@ -1,40 +1,39 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
 
-const LoginPage = () => {
+const API_BASE_URL = 'http://88.200.63.148:8000';
+
+function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
-    const [success, setSuccess] = useState('');       // new state
+    const [success, setSuccess] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async e => {
         e.preventDefault();
         setError('');
         setSuccess('');
+
         try {
-            const response = await fetch('http://88.200.63.148:8000/users/login', {
+            const res = await fetch(`${API_BASE_URL}/users/login`, {
                 method: 'POST',
+                credentials: 'include',            // ← send+receive cookie
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
 
-            console.log('Raw response:', response);
-            const result = await response.json();
-            console.log('Parsed JSON:', result);
+            console.log('Login response status:', res.status);
+            const result = await res.json();
+            console.log('Login JSON:', result);
 
-            if (response.ok) {
-                setSuccess(result.message || 'Login successful!');
-                // Wait 1 second so the user sees the success message:
-                localStorage.setItem('user', JSON.stringify(result.user));
-                setTimeout(() => {
-                    // Make sure you have a Dashboard route defined,  
-                    // otherwise this will just blank out your page.
-                    navigate('/');
-                }, 1000);
+            if (res.ok) {
+                setSuccess('Login successful!');
+                // OPTIONAL: store in localStorage if you need it elsewhere
+                localStorage.setItem('currentUser', JSON.stringify(result.user));
+                setTimeout(() => navigate('/'), 1000);
             } else {
-                setError(result.message || 'Invalid email or password');
+                setError(result.message || 'Invalid credentials');
             }
         } catch (err) {
             console.error('Login error:', err);

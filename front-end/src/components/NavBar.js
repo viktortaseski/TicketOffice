@@ -8,13 +8,32 @@ const NavBar = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const stored = localStorage.getItem('user');
-        if (stored) {
+        const fetchUser = async () => {
             try {
-                setUserType(JSON.parse(stored).userType);
-            } catch { /* ignore */ }
-        }
+                const res = await fetch('http://88.200.63.148:8000/users/me', { credentials: 'include' });
+                if (!res.ok) throw new Error('Not logged in');
+                const data = await res.json();
+                setUserType(data.user.userType);
+            } catch {
+                setUserType(null); // not logged in
+            }
+        };
+
+        fetchUser();
     }, []);
+
+    const handleLogout = async () => {
+        try {
+            await fetch('http://88.200.63.148:8000/users/logout', {
+                method: 'POST',
+                credentials: 'include'
+            });
+            setUserType(null);
+            navigate('/login'); // Or '/' if you want to go to home
+        } catch (error) {
+            console.error('Logout failed:', error);
+        }
+    };
 
     const handleSearch = e => {
         e.preventDefault();
@@ -48,7 +67,6 @@ const NavBar = () => {
 
                 {/* Three-dot menu */}
                 <Nav className="ms-auto">
-                    <Nav.Link as={Link} to="/cart">My Cart</Nav.Link>
                     <Dropdown align="end">
                         <Dropdown.Toggle
                             variant="link"
@@ -60,19 +78,26 @@ const NavBar = () => {
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu align="end">
-                            <Dropdown.Item as={Link} to="/settings">Settings</Dropdown.Item>
-                            {userType === 'Organizer' && (
+                            {userType ? (
                                 <>
-                                    <Dropdown.Item as={Link} to="/create-event">
-                                        Create Event
-                                    </Dropdown.Item>
-                                    <Dropdown.Item as={Link} to="/validate-organization">
-                                        Validate Organization
-                                    </Dropdown.Item>
+                                    <Dropdown.Item as={Link} to="/cart">My Cart</Dropdown.Item>
+                                    <Dropdown.Item as={Link} to="/settings">Settings</Dropdown.Item>
+                                    {userType === 'Organizer' && (
+                                        <>
+                                            <Dropdown.Item as={Link} to="/create-event">
+                                                Create Event
+                                            </Dropdown.Item>
+                                            <Dropdown.Item as={Link} to="/validate-organization">
+                                                Validate Organization
+                                            </Dropdown.Item>
+                                        </>
+                                    )}
+                                    <Dropdown.Divider />
+                                    <Dropdown.Item onClick={handleLogout}>Logout</Dropdown.Item>
                                 </>
+                            ) : (
+                                <Dropdown.Item as={Link} to="/login">Login</Dropdown.Item>
                             )}
-                            <Dropdown.Divider />
-                            <Dropdown.Item as={Link} to="/logout">Logout</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
                 </Nav>

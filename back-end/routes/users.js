@@ -48,14 +48,11 @@ router.get('/', async (req, res, next) => {
 // Login existing user
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password required' });
-    }
+    // I have to add validation here.
 
     try {
         const user = await DB.getUserByEmail(email);
         if (!user || user.password !== password) {
-            // in prod, use hashed passwords and bcrypt.compare()
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
@@ -67,6 +64,9 @@ router.post('/login', async (req, res) => {
             userType: user.userType
         };
 
+        console.log('   LOGIN: session.user now =', req.session.user);
+
+        // return success
         return res.json({ success: true, user: req.session.user });
     } catch (err) {
         console.error('Login error:', err);
@@ -74,20 +74,19 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// POST /api/users/logout
+// Logout
 router.post('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
             console.error('Logout error:', err);
             return res.status(500).json({ message: 'Could not log out' });
         }
-        // clear the cookie on client
         res.clearCookie('sid');
         return res.json({ success: true });
     });
 });
 
-// GET /api/users/me  → checks session
+// Get current user
 router.get('/me', (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({ message: 'Not authenticated' });
@@ -95,5 +94,13 @@ router.get('/me', (req, res) => {
     return res.json({ user: req.session.user });
 });
 
+// Logout current user:
+router.post('/users/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) return res.status(500).json({ message: 'Logout failed' });
+        res.clearCookie('connect.sid'); // or your session cookie name
+        res.json({ message: 'Logged out' });
+    });
+});
 
 module.exports = router;

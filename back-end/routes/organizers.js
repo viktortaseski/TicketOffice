@@ -65,7 +65,6 @@ router.post('/', async (req, res, next) => {
     } catch (err) {
         // Handle duplicate registrationNumber or user_id
         if (err.code === 'ER_DUP_ENTRY') {
-            // Light logging—no full stack
             console.log(
                 `Duplicate organizer registration: registrationNumber="${req.body.registrationNumber}" or user_id="${req.body.user_id}"`
             );
@@ -74,7 +73,7 @@ router.post('/', async (req, res, next) => {
                 .json({ message: 'An organizer with that registration number or user_id already exists.' });
         }
 
-        // All other errors get full logging
+        // All other errors
         console.error('Unexpected error creating organizer:', err);
         next(err);
     }

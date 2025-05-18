@@ -29,12 +29,10 @@ export default function Home() {
                 if (!res.ok) throw new Error('Network response was not ok');
                 const all = await res.json();
 
-                const sorted = all.sort((a, b) => {
-                    const aMatch = a.title.toLowerCase().includes(query);
-                    const bMatch = b.title.toLowerCase().includes(query);
-                    if (aMatch === bMatch) return 0;
-                    return aMatch ? -1 : 1;
-                });
+                const sorted = all
+                    .filter(ev => ev.title.toLowerCase().includes(query))
+                    .sort((a, b) => new Date(a.date) - new Date(b.date));
+
 
                 setItems(sorted);
             } catch (err) {

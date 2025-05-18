@@ -11,7 +11,7 @@ import SelectSeatsPage from './pages/select-seats/SelectSeatsPage';
 import CheckoutPage from './pages/checkout/CheckoutPage';
 import CategoryPage from './components/home/CategoryPage';
 import MyCartPage from './pages/checkout/MyCartPage';
-import ConfirmationPage from './pages/ConfirmationPage';
+import ConfirmationPage from './pages/checkout/ConfirmationPage';
 
 const App = () => {
 

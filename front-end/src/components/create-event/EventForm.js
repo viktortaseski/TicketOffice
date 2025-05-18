@@ -13,7 +13,7 @@ const categories = [
 ];
 
 const fields = [
-    { name: 'date', label: 'Date', type: 'date', required: true, col: { md: 6 } },
+    { name: 'date', label: 'Date', type: 'date', required: true, min: '2024-01-01', max: '2200-12-31', col: { md: 6 } },
     { name: 'time', label: 'Time', type: 'time', required: true, col: { md: 6 } },
     { name: 'title', label: 'Title', type: 'text', required: true, placeholder: 'Event title', col: { md: 12 } },
     { name: 'venue', label: 'Venue', type: 'text', required: true, placeholder: 'Event venue', col: { md: 12 } },

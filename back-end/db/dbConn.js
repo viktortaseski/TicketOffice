@@ -1,21 +1,21 @@
-const mysql = require('mysql2');
+const mysql = require("mysql2");
 
 const conn = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
     database: process.env.DB_DATABASE,
-})
+});
 
 conn.connect((err) => {
     if (err) {
         console.log("ERROR: " + err.message);
         return;
     }
-    console.log('Connection established');
-})
+    console.log("Connection established");
+});
 
-let dataPool = {}
+let dataPool = {};
 
 // ── Events: ─────────────────────────────────────────────
 
@@ -35,7 +35,7 @@ dataPool.getEvents = () => {
            venue,
            e_ticket_price
          FROM Event`,
-            (err, results) => err ? reject(err) : resolve(results)
+            (err, results) => (err ? reject(err) : resolve(results))
         );
     });
 };
@@ -60,7 +60,7 @@ dataPool.getEventById = (id) => {
             [id],
             (err, results) => {
                 if (err) return reject(err);
-                // results is an array; return first or 
+                // results is an array; return first or
                 resolve(results[0] || null);
             }
         );
@@ -105,35 +105,36 @@ dataPool.createEvent = (
     });
 };
 
-
 // ── Users: ─────────────────────────────────────────────
 
 dataPool.getUsers = () => {
     return new Promise((resolve, reject) => {
-        conn.query(
-            'SELECT * FROM User',
-            (err, results) => {
-                if (err) return reject(err);
-                resolve(results);
-            });
+        conn.query("SELECT * FROM User", (err, results) => {
+            if (err) return reject(err);
+            resolve(results);
+        });
     });
 };
 
 dataPool.registerUser = (email, password, username, userType) => {
     return new Promise((resolve, reject) => {
         conn.query(
-            'INSERT INTO User (email, password, username, userType) VALUES (?,?,?,?)',
-            [email, password, username, userType], (err, res) => {
-                if (err) { return reject(err) }
-                return resolve(res)
-            })
-    })
-}
+            "INSERT INTO User (email, password, username, userType) VALUES (?,?,?,?)",
+            [email, password, username, userType],
+            (err, res) => {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(res);
+            }
+        );
+    });
+};
 
 dataPool.getUserByEmail = (email) => {
     return new Promise((resolve, reject) => {
         conn.query(
-            'SELECT id, email, password, username, userType FROM `User` WHERE email = ?',
+            "SELECT id, email, password, username, userType FROM `User` WHERE email = ?",
             [email],
             (err, results) => {
                 if (err) return reject(err);
@@ -149,7 +150,7 @@ dataPool.getUserByEmail = (email) => {
 dataPool.getOrganizers = () => {
     return new Promise((resolve, reject) => {
         conn.query(
-            'SELECT registrationNumber, user_id, orgName, orgType, taxId, contactEmail, contactPhone, address, city, country, bankAccount FROM `Organizer`',
+            "SELECT registrationNumber, user_id, orgName, orgType, taxId, contactEmail, contactPhone, address, city, country, bankAccount FROM `Organizer`",
             (err, results) => {
                 if (err) return reject(err);
                 resolve(results);
@@ -157,7 +158,6 @@ dataPool.getOrganizers = () => {
         );
     });
 };
-
 
 dataPool.createOrganizer = (
     registrationNumber,
@@ -189,7 +189,7 @@ dataPool.createOrganizer = (
                 address,
                 city,
                 country,
-                bankAccount
+                bankAccount,
             ],
             (err, result) => {
                 if (err) return reject(err);
@@ -201,132 +201,111 @@ dataPool.createOrganizer = (
 
 // ── Order/Payment and ticket: ─────────────────────────────────────────────
 
-dataPool.createOrder = (user_id, event_id, total_amount) => {
+dataPool.createOrder = (user_id, event_id, total_amount, ticketQuantity) => {
     return new Promise((resolve, reject) => {
         conn.query(
-            // This is in case of publishing this project
-            /*    `INSERT INTO \`Order\`
-             (user_id, event_id, order_date, total_amount, payment_status)
-           VALUES (?, ?, NOW(), ?, 'pending')`,
-                [user_id, event_id, total_amount],
-            */
             `INSERT INTO \`Order\`
-            (user_id, event_id, order_date, total_amount, payment_status)
-             VALUES (?, ?, NOW(), ?, 'completed')`,
-            (err, result) => err ? reject(err) : resolve(result.insertId)
+            (user_id, event_id, order_date, total_amount, ticketQuantity, payment_status)
+            VALUES (?, ?, NOW(), ?, ?, 'Pending')`,
+            [user_id, event_id, total_amount, ticketQuantity],
+            (err, result) => (err ? reject(err) : resolve(result.insertId))
         );
     });
 };
 
-/*
- * 2) Create a Payment row for that order, status 'pending'
- */
-dataPool.createPayment = (order_id, payment_method, transaction_id, amount) => {
+dataPool.updateOrderStatus = (order_id, payment_status) => {
     return new Promise((resolve, reject) => {
         conn.query(
-        /*    This is Also in case of publishing
-            `INSERT INTO Payment
-         (p_order_id, payment_method, transaction_id, amount, payment_status, payment_date)
-       VALUES (?, ?, ?, ?, 'pending', NOW())`,
-            [order_id, payment_method, transaction_id, amount],
-        */  `INSERT INTO Payment
-            (p_order_id, payment_method, transaction_id, amount, payment_status, payment_date)
-            VALUES (?, ?, ?, ?, 'completed', NOW())`,
-            (err, result) => err ? reject(err) : resolve(result.insertId)
+            `UPDATE \`Order\`
+            SET payment_status = ?
+            WHERE order_id = ?`,
+            [payment_status, order_id],
+            (err, result) => (err ? reject(err) : resolve(result))
         );
     });
 };
 
-/*
- * 3) Create one Ticket per seat
- */
-dataPool.createTicket = (order_id, event_id, seat_number, price, qr_code) => {
+
+dataPool.createPayment = (
+    p_order_id,
+    payment_method,
+    amount,
+    payment_date,
+    payment_status
+) => {
     return new Promise((resolve, reject) => {
+        conn.query(
+            `INSERT INTO Payment
+         (p_order_id, payment_method, amount, payment_date, payment_status)
+       VALUES (?, ?, ?, ?, ?)`,
+            [p_order_id, payment_method, amount, payment_date, payment_status],
+            (err, result) => (err ? reject(err) : resolve(result.insertId))
+        );
+    });
+};
+
+dataPool.createTicketsBulk = (tickets) => {
+    return new Promise((resolve, reject) => {
+        const values = tickets.map((t) => [
+            t.order_id,
+            t.event_id,
+            "",
+            t.price,
+            t.seat_number,
+        ]);
+
         conn.query(
             `INSERT INTO Ticket
-         (order_id, id_event, seat_number, price, QR_img)
-       VALUES (?, ?, ?, ?, ?)`,
-            [order_id, event_id, seat_number, price, qr_code],
-            (err, result) => err ? reject(err) : resolve(result.insertId)
+         (order_id, event_id, QR_img, price, seat_number)
+       VALUES ?`,
+            [values],
+            (err, result) => (err ? reject(err) : resolve(result))
         );
     });
 };
 
-/*
- * 4) Decrement availableTickets on the Event
- */
-dataPool.decrementEventTickets = (event_id, count) => {
-    return new Promise((resolve, reject) => {
-        conn.query(
-            `UPDATE Event
-         SET availableTickets = availableTickets - ?
-       WHERE id_event = ?`,
-            [count, event_id],
-            (err, result) => err ? reject(err) : resolve(result)
-        );
-    });
-};
-
-// ── Step 2.2: Transaction helpers ─────────────────────────────────────────────
-
-dataPool.beginTransaction = () =>
-    new Promise((resolve, reject) =>
-        conn.beginTransaction(err => (err ? reject(err) : resolve()))
-    );
-
-dataPool.commitTransaction = () =>
-    new Promise((resolve, reject) =>
-        conn.commit(err => (err ? reject(err) : resolve()))
-    );
-
-dataPool.rollbackTransaction = () =>
-    new Promise(resolve =>
-        conn.rollback(() => resolve())
-    );
-
-// ── Fetch all orders for a user (both pending & completed)
-dataPool.getOrdersByUser = (user_id) => {
-    return new Promise((resolve, reject) => {
-        conn.query(
-            `SELECT
-         o.order_id,
-         o.event_id,
-         o.order_date,
-         o.total_amount,
-         o.payment_status,
-         e.title AS event_title
-       FROM \`Order\` o
-       JOIN Event e ON o.event_id = e.id_event
-       WHERE o.user_id = ?
-       ORDER BY o.order_date DESC`,
-            [user_id],
-            (err, results) => err ? reject(err) : resolve(results)
-        );
-    });
-};
-
-// ── Fetch all tickets for a single order
 dataPool.getTicketsByOrder = (order_id) => {
     return new Promise((resolve, reject) => {
         conn.query(
             `SELECT
-         t.ticket_id,
-         t.seat_number,
-         t.price,
-         t.QR_img,
-         e.title      AS event_title,
-         e.date,
-         e.time,
-         e.venue
-       FROM Ticket t
-       JOIN Event e ON t.id_event = e.id_event
-       WHERE t.order_id = ?`,
+                t.ticket_id,
+                t.seat_number,
+                t.price,
+                t.QR_img,
+                e.title      AS event_title,
+                e.date,
+                e.time,
+                e.venue
+            FROM Ticket t
+            JOIN Event e ON t.event_id = e.id_event
+            WHERE t.order_id = ?`,
             [order_id],
-            (err, results) => err ? reject(err) : resolve(results)
+            (err, results) => (err ? reject(err) : resolve(results))
         );
     });
 };
 
-
+dataPool.getOrdersByUser = (user_id) => {
+    return new Promise((resolve, reject) => {
+        conn.query(
+            `SELECT
+                o.order_id,
+                o.event_id,
+                o.order_date,
+                o.total_amount,
+                o.payment_status,
+                o.ticketQuantity,
+                e.title AS event_title,
+                e.e_ticket_price,
+                e.poster
+            FROM \`Order\` o
+            JOIN Event e ON o.event_id = e.id_event
+            WHERE o.user_id = ?
+            ORDER BY o.order_date DESC`,
+            [user_id],
+            (err, results) => (err ? reject(err) : resolve(results))
+        );
+    });
+};
 
 module.exports = dataPool;
