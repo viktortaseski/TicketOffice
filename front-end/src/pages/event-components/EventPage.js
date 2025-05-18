@@ -2,15 +2,15 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import API_BASE_URL from '../api';
-import NavBar from '../components/NavBar';
-import MyButton from '../components/MyButton';
+import API_BASE_URL from '../../api';
+import NavBar from '../../components/NavBar';
+import MyButton from '../../components/MyButton';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Image from 'react-bootstrap/Image';
-import noImg from '../assets/noImg.jpg';
+import noImg from '../../assets/noImg.jpg';
 
 export default function EventPage() {
     const { id } = useParams();

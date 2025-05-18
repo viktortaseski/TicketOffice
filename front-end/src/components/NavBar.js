@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, Container, Nav, Dropdown, Form, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
+import './home/home.css'
 
 const NavBar = () => {
     const [userType, setUserType] = useState(null);
@@ -43,20 +44,19 @@ const NavBar = () => {
 
     return (
         <Navbar bg="dark" variant="dark" expand="lg" className="py-3 sticky-top">
-            <Container>
+            <Container className="d-flex justify-content-between align-items-center">
                 {/* Brand */}
                 <Navbar.Brand as={Link} to="/">TicketOffice</Navbar.Brand>
 
-                {/* Search form */}
                 <Form
                     onSubmit={handleSearch}
-                    className="d-flex mx-auto"
-                    style={{ maxWidth: 400, width: '100%' }}
+                    className="d-flex align-items-center me-2 search-form"
+                    style={{ minWidth: 0 }}
                 >
                     <Form.Control
                         type="text"
                         placeholder="Search events…"
-                        className="me-2"
+                        className="me-2 flex-grow-1"
                         value={query}
                         onChange={e => setQuery(e.target.value)}
                     />
@@ -66,13 +66,21 @@ const NavBar = () => {
                 </Form>
 
                 {/* Three-dot menu */}
-                <Nav className="ms-auto">
-                    <Dropdown align="end">
+                <Nav className="d-flex align-items-center">
+                    <Dropdown
+                        className="settings-dropdown"
+                        drop="down"
+                        align="end"
+                    >
                         <Dropdown.Toggle
                             variant="link"
                             id="settings-dropdown"
                             className="text-decoration-none p-0"
-                            style={{ fontSize: '1.5rem', lineHeight: 1, color: 'rgba(255,255,255,0.75)' }}
+                            style={{
+                                fontSize: '1.5rem',
+                                lineHeight: 1,
+                                color: 'rgba(255,255,255,0.75)'
+                            }}
                         >
                             &#x22EE;
                         </Dropdown.Toggle>
@@ -102,7 +110,7 @@ const NavBar = () => {
                     </Dropdown>
                 </Nav>
             </Container>
-        </Navbar>
+        </Navbar >
     );
 };
 

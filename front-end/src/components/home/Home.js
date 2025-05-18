@@ -9,7 +9,8 @@ import EventCard from '../EventCard';
 import API_BASE_URL from '../../api';
 import './home.css';
 
-import mainPromotion from '../../assets/mainPromotion.jpg'; // Import image
+import mainPromotion from '../../assets/mainPromotion.jpg';
+import gameBanner from '../../assets/gameBanner.jpg'            // Import image
 
 function useQueryParam(name) {
     return new URLSearchParams(useLocation().search).get(name);
@@ -52,7 +53,9 @@ export default function Home() {
             {/* Promotion Banner */}
             <div className='promotionDiv'>
                 <img
-                    src={mainPromotion}
+                    src={//mainPromotion
+                        gameBanner
+                    }
                     alt="Promotion Banner"
                     className='promotionImg'
                 />

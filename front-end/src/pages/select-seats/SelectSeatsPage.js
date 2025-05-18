@@ -57,6 +57,7 @@ export default function SelectSeatsPage() {
             return alert(`Please select exactly ${numericCount} seat(s).`);
         }
 
+
         const unitPrice = parseFloat(event.e_ticket_price);
         const totalAmount = numericCount * unitPrice;
 
@@ -69,6 +70,15 @@ export default function SelectSeatsPage() {
                     ticketQuantity: numericCount
                 }
             });
+
+
+            if (res.status === 401) {
+                alert('You must be logged in to place an order.');
+                navigate('/login');    // ← call navigate, don’t return it
+                return;
+            }
+
+
 
             if (!res.ok) {
                 console.error('Create order failed:', res.status, await res.text());

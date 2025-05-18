@@ -1,10 +1,10 @@
 
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './components/home/Home';
-import EventPage from './pages/EventPage';
-import PurchasePage from './pages/PurchasePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage'
+import EventPage from './pages/event-components/EventPage';
+import PurchasePage from './pages/checkout/PurchasePage';
+import LoginPage from './pages/auth-pages/LoginPage';
+import RegisterPage from './pages/auth-pages/RegisterPage'
 import CreateEventPage from './components/create-event/CreateEventPage'
 import ValidateOrganizationPage from './components/validate-organization/ValidateOrganizationPage'
 import SelectSeatsPage from './pages/select-seats/SelectSeatsPage';
