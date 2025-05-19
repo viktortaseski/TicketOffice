@@ -48,7 +48,7 @@ const MyEventsPage = () => {
                         {events.map(event => (
                             <tr key={event.id}>
                                 <td>{event.title}</td>
-                                <td>{event.date}</td>
+                                <td>{formatDate(event.date)}</td>
                                 <td>{event.venue}</td>
                                 <td>
                                     <Link to={`/edit-event/${event.id}`}>

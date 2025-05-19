@@ -90,9 +90,10 @@ const NavBar = () => {
                                 <>
                                     <Dropdown.Item as={Link} to="/cart">My Cart</Dropdown.Item>
                                     <Dropdown.Item as={Link} to="/settings">Settings</Dropdown.Item>
-                                    <Dropdown.Item as={Link} to="/my-events">My Events</Dropdown.Item> {/* Added link */}
+
                                     {userType === 'Organizer' && (
                                         <>
+                                            <Dropdown.Item as={Link} to="/my-events">My Events</Dropdown.Item>
                                             <Dropdown.Item as={Link} to="/create-event">Create Event</Dropdown.Item>
                                             <Dropdown.Item as={Link} to="/validate-organization">Validate Organization</Dropdown.Item>
                                         </>

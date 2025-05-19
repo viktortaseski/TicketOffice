@@ -9,7 +9,6 @@ import EventCard from '../EventCard';
 import API_BASE_URL from '../../api';
 import './home.css';
 
-import mainPromotion from '../../assets/mainPromotion.jpg';
 import gameBanner from '../../assets/gameBanner.jpg'            // Import image
 
 function useQueryParam(name) {
