@@ -12,6 +12,8 @@ import CheckoutPage from './pages/checkout/CheckoutPage';
 import CategoryPage from './components/home/CategoryPage';
 import MyCartPage from './pages/checkout/MyCartPage';
 import ConfirmationPage from './pages/checkout/ConfirmationPage';
+import MyEventsPage from './components/create-event/MyEventsPage';
+import EditEventPage from './components/create-event/EditEventPage';
 
 const App = () => {
 
@@ -31,6 +33,8 @@ const App = () => {
         <Route path="/category/:categoryName" element={<CategoryPage />} />
         <Route path="/confirmation/:orderId" element={<ConfirmationPage />} />
         <Route path="/cart" element={<MyCartPage />} />
+        <Route path="/my-events" element={<MyEventsPage />} />
+        <Route path="/edit-event/:id" element={<EditEventPage />} />
       </Routes>
     </BrowserRouter>
   )

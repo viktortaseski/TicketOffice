@@ -18,12 +18,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // CORS – reflect origin & allow cookies
-app.use(cors({
-    origin: true,           // ← reflect the request Origin
-    credentials: true,      // ← allow session cookie
-    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type']
-}));
+app.use(
+    cors({
+        origin: true,
+        credentials: true,
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],  // add 'PUT' here
+        allowedHeaders: ['Content-Type']
+    })
+);
 
 // Session
 app.use(session({

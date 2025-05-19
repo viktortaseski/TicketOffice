@@ -105,6 +105,67 @@ dataPool.createEvent = (
     });
 };
 
+dataPool.getEventsByOrganizer = (organizer_id) => {
+    return new Promise((resolve, reject) => {
+        conn.query(
+            `SELECT
+         id_event   AS id,
+         title, date, description, time,
+         poster, category, availableTickets,
+         organizer_id, venue, e_ticket_price
+       FROM Event
+       WHERE organizer_id = ?`,
+            [organizer_id],
+            (err, results) => err ? reject(err) : resolve(results)
+        );
+    });
+}
+
+dataPool.updateEvent = (
+    id,
+    title,
+    date,
+    description,
+    time,
+    poster,
+    category,
+    availableTickets,
+    organizer_id,
+    venue,
+    ticketPrice
+) => {
+    return new Promise((resolve, reject) => {
+        conn.query(
+            `UPDATE Event
+         SET title            = ?,
+             date             = ?,
+             description      = ?,
+             time             = ?,
+             poster           = ?,
+             category         = ?,
+             availableTickets = ?,
+             organizer_id     = ?,
+             venue            = ?,
+             e_ticket_price   = ?
+       WHERE id_event = ?`,
+            [
+                title,
+                date,
+                description,
+                time,
+                poster,
+                category,
+                availableTickets,
+                organizer_id,
+                venue,
+                ticketPrice,
+                id
+            ],
+            (err, result) => err ? reject(err) : resolve(result)
+        );
+    });
+};
+
 // ── Users: ─────────────────────────────────────────────
 
 dataPool.getUsers = () => {
