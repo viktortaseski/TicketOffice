@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../api';
@@ -9,6 +9,8 @@ import AlertModal from './AlertModal';
 import './CreateEventPage.css';
 
 export default function CreateEventPage() {
+    const [userId, setUserId] = useState(null);
+
     const [data, setData] = useState({
         date: '',
         time: '',
@@ -28,6 +30,20 @@ export default function CreateEventPage() {
     const [showError, setShowError] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
+    useEffect(() => {
+        (async () => {
+            try {
+                const res = await fetch(`${API_BASE_URL}/users/me`, { credentials: 'include' });
+                if (!res.ok) throw new Error('Failed to fetch user');
+                const payload = await res.json();
+                console.log('/users/me →', payload);
+                setUserId(payload.user.id);
+            } catch (err) {
+                console.error(err);
+            }
+        })();
+    }, []);
+
     const handleChange = e => {
         const { name, value } = e.target;
         setData(d => ({ ...d, [name]: value }));
@@ -45,9 +61,7 @@ export default function CreateEventPage() {
         setShowError(false);
         setShowSuccess(false);
 
-        const stored = localStorage.getItem('user');
-        const organizer = stored ? JSON.parse(stored) : null;
-        if (!organizer?.id) {
+        if (!userId) {
             setError('Please log in as an organizer.');
             setShowError(true);
             return;
@@ -92,7 +106,7 @@ export default function CreateEventPage() {
         formData.append('ticketPrice', ticketPrice);
         formData.append('availableTickets', availableTickets);
         formData.append('description', description);
-        formData.append('organizer_id', organizer.id);
+        formData.append('organizer_id', userId);
 
         try {
             const res = await fetch(`${API_BASE_URL}/events`, {
@@ -115,7 +129,7 @@ export default function CreateEventPage() {
                     category: 'Concerts',
                     description: '',
                     availableTickets: '',
-                    ticketPrice: undefined,
+                    ticketPrice: '',
                 });
                 navigate('/');
             } else {
@@ -163,6 +177,7 @@ export default function CreateEventPage() {
                             onChange={handleChange}
                             onFileChange={handleFileChange}
                             onSubmit={handleSubmit}
+                            disabled={!userId}
                         />
                     </Col>
                     <Col md={4}>
