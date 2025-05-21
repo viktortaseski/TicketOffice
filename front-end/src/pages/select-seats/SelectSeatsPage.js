@@ -152,7 +152,7 @@ export default function SelectSeatsPage() {
                                 max={event.availableTickets}
                                 value={ticketCount}
                                 onChange={e => {
-                                    const v = e.target.value.replace(/^0+/, '') || '1';
+                                    const v = e.target.value.replace(/^0+/, '');
                                     setTicketCount(v);
                                     setSelectedSeats([]);
                                 }}
