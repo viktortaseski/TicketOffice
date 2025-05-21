@@ -160,7 +160,26 @@ router.put('/:id', upload.single('poster'), async (req, res) => {
     }
 });
 
-module.exports = router;
+router.delete('/:id', async (req, res) => {
+    // (optional) ensure only the organizer who created it can delete:
+    if (!req.session?.user) {
+        return res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
+
+    try {
+        const { id } = req.params;
+        const result = await DB.deleteEvent(id);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ success: false, message: 'Event not found' });
+        }
+
+        res.json({ success: true, message: 'Event deleted' });
+    } catch (err) {
+        console.error('Error deleting event:', err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
 
 router.get('/:id', async (req, res) => {
     try {

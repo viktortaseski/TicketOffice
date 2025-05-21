@@ -105,6 +105,17 @@ dataPool.createEvent = (
     });
 };
 
+dataPool.deleteEvent = (id) => {
+    return new Promise((resolve, reject) => {
+        conn.query(
+            `DELETE FROM Event WHERE id_event = ?`,
+            [id],
+            (err, result) => err ? reject(err) : resolve(result)
+        );
+    });
+};
+
+
 dataPool.getEventsByOrganizer = (organizer_id) => {
     return new Promise((resolve, reject) => {
         conn.query(
