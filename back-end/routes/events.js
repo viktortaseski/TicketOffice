@@ -99,7 +99,7 @@ router.post('/', upload.single('poster'), async (req, res) => {
     }
 });
 
-// Get events by user id
+// Get events by logged in userId
 router.get('/mine', async (req, res) => {
     // ensure we have a logged-in user in session
     if (!req.session || !req.session.user) {

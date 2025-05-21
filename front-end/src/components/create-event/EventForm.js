@@ -89,7 +89,7 @@ export default function EventForm({ data, onChange, onFileChange, onSubmit }) {
                 })}
 
                 {/* Poster row: file + URL side-by-side */}
-                <Col xs={12} md={6}>
+                <Col xs={12} md={12}>
                     <Form.Group controlId="posterFile">
                         <Form.Label>Poster Image *</Form.Label>
                         <Form.Control
@@ -98,23 +98,6 @@ export default function EventForm({ data, onChange, onFileChange, onSubmit }) {
                             onChange={onFileChange}
                             required
                         />
-                    </Form.Group>
-                </Col>
-                <Col xs={12} md={6}>
-                    <Form.Group controlId="posterUrl">
-                        <Form.Label>Poster URL</Form.Label>
-                        <InputGroup>
-                            <Form.Control
-                                type="url"
-                                name="posterUrl"
-                                placeholder="https://…"
-                                value={data.posterUrl}
-                                onChange={onChange}
-                            />
-                        </InputGroup>
-                        <Form.Text className="text-muted">
-                            Use a URL instead of uploading.
-                        </Form.Text>
                     </Form.Group>
                 </Col>
 

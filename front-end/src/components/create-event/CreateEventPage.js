@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../api';
 import EventForm from './EventForm';
 import EventPreview from './EventPreview';
@@ -21,6 +22,7 @@ export default function CreateEventPage() {
         ticketPrice: undefined,
     });
 
+    const navigate = useNavigate();
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [showError, setShowError] = useState(false);
@@ -95,6 +97,7 @@ export default function CreateEventPage() {
         try {
             const res = await fetch(`${API_BASE_URL}/events`, {
                 method: 'POST',
+                credentials: 'include',
                 body: formData
             });
             const json = await res.json();
@@ -114,6 +117,7 @@ export default function CreateEventPage() {
                     availableTickets: '',
                     ticketPrice: undefined,
                 });
+                navigate('/');
             } else {
                 setError(json.message || 'Failed to create event.');
                 setShowError(true);
