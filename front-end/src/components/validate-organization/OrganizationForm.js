@@ -19,8 +19,6 @@ const fields = [
 export default function OrganizationForm({ form, onChange, onSubmit, error, success }) {
     return (
         <Form onSubmit={onSubmit}>
-            {error && <div className="alert alert-danger">{error}</div>}
-            {success && <div className="alert alert-success">{success}</div>}
 
             <Row>
                 {fields.map(({ name, label, type = 'text', required, xs }) => (
@@ -44,6 +42,9 @@ export default function OrganizationForm({ form, onChange, onSubmit, error, succ
                     Submit for Validation
                 </Button>
             </div>
+
+            {error && <div className="alert alert-danger mt-3">{error}</div>}
+            {success && <div className="alert alert-success mt-3">{success}</div>}
         </Form>
     );
 }
