@@ -2,7 +2,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Home from './components/home/Home';
 import EventPage from './pages/event-components/EventPage';
-import PurchasePage from './pages/checkout/PurchasePage';
 import LoginPage from './pages/auth-pages/LoginPage';
 import RegisterPage from './pages/auth-pages/RegisterPage'
 import CreateEventPage from './components/create-event/CreateEventPage'
@@ -23,7 +22,6 @@ const App = () => {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/events/:id' element={<EventPage />} />
-        <Route path='/purchases' element={<PurchasePage />} />
         <Route path='/login' element={<LoginPage />} />
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/create-event' element={<CreateEventPage />} />

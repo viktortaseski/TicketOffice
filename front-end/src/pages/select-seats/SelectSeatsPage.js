@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
+import { useParams, useNavigate, useLocation, } from 'react-router-dom';
+import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import NavBar from '../../components/NavBar';
 import EventCard from '../../components/EventCard';
 import API_BASE_URL, { apiFetch } from '../../api';
@@ -20,7 +16,10 @@ const generateSeatLayout = () => {
 
 export default function SelectSeatsPage() {
     const { id } = useParams();
+    const { state } = useLocation();
     const navigate = useNavigate();
+    const isExistingOrder = state?.isExistingOrder;
+    const existingOrderId = state?.orderId;
 
     const [ticketCount, setTicketCount] = useState('1');
     const numericCount = parseInt(ticketCount, 10) || 0;
@@ -28,7 +27,6 @@ export default function SelectSeatsPage() {
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // load event
     useEffect(() => {
         (async () => {
             try {
@@ -44,58 +42,93 @@ export default function SelectSeatsPage() {
     }, [id]);
 
     const handleSeatClick = seat => {
-        if (selectedSeats.includes(seat)) {
-            setSelectedSeats(s => s.filter(x => x !== seat));
-        } else if (selectedSeats.length < numericCount) {
-            setSelectedSeats(s => [...s, seat]);
-        }
+        setSelectedSeats(curr =>
+            curr.includes(seat)
+                ? curr.filter(x => x !== seat)
+                : curr.length < numericCount
+                    ? [...curr, seat]
+                    : curr
+        );
     };
 
-
-    const handleProceed = async () => {
-        if (selectedSeats.length !== numericCount) {
-            return alert(`Please select exactly ${numericCount} seat(s).`);
-        }
-
-
+    const createOrder = async () => {
         const unitPrice = parseFloat(event.e_ticket_price);
         const totalAmount = numericCount * unitPrice;
 
+        const res = await apiFetch('/api/orders', {
+            method: 'POST',
+            body: {
+                event_id: id,
+                total_amount: totalAmount,
+                ticketQuantity: numericCount,
+            },
+        });
+
+        if (res.status === 401) {
+            alert('You must be logged in.');
+            navigate('/login');
+            return null;
+        }
+        if (!res.ok) {
+            console.error('Order creation failed:', res.status, await res.text());
+            throw new Error('Could not create order');
+        }
+        return res.json();
+    };
+
+    const handleAddToCart = async () => {
+        if (selectedSeats.length !== numericCount) {
+            return alert(`Select exactly ${numericCount} seats.`);
+        }
         try {
-            const res = await apiFetch('/api/orders', {
-                method: 'POST',
-                body: {
-                    event_id: id,
-                    total_amount: totalAmount,
-                    ticketQuantity: numericCount
-                }
-            });
-
-
-            if (res.status === 401) {
-                alert('You must be logged in to place an order.');
-                navigate('/login');    // ← call navigate, don’t return it
-                return;
-            }
-
-
-
-            if (!res.ok) {
-                console.error('Create order failed:', res.status, await res.text());
-                throw new Error('Could not create order');
-            }
-
-            const { order_id } = await res.json();
-            navigate(`/checkout/${id}`, {
-                state: { selectedSeats, orderId: order_id }
-            });
+            const data = await createOrder();
+            if (!data) return;
+            navigate('/cart');
         } catch (err) {
             console.error(err);
-            alert('Failed to create order. Please try again.');
+            alert('Failed to add to cart.');
         }
     };
 
+    const handleProceed = async () => {
+        if (selectedSeats.length !== numericCount) {
+            return alert(`Select exactly ${numericCount} seats.`);
+        }
+        try {
+            const data = await createOrder();
+            if (!data) return;
+            navigate(`/checkout/${id}`, {
+                state: {
+                    orderId: data.order_id,
+                    selectedSeats,
+                    ticketQuantity: numericCount,
+                    isExistingOrder: false,
+                },
+            });
+        } catch (err) {
+            console.error(err);
+            alert('Failed to proceed.');
+        }
+    };
 
+    // --------------------------------------------------
+    // Simplified: just carry forward the existingOrderId
+    // --------------------------------------------------
+    const handleContinueOrder = () => {
+        if (selectedSeats.length !== numericCount) {
+            return alert(`Select exactly ${numericCount} seats.`);
+        }
+
+        // No fetch/update here—just send existingOrderId into checkout
+        navigate(`/checkout/${id}`, {
+            state: {
+                orderId: existingOrderId,
+                selectedSeats,
+                ticketQuantity: numericCount,
+                isExistingOrder: true,
+            },
+        });
+    };
 
     if (loading) return <div>Loading…</div>;
     if (!event) return <div>Event not found.</div>;
@@ -108,18 +141,18 @@ export default function SelectSeatsPage() {
             <Container className="my-5">
                 <Row>
                     <Col md={8}>
-                        <h2 className="mb-4">Select Seats for "{event.title}"</h2>
+                        <h2>Select Seats for “{event.title}”</h2>
                         <p className="text-muted">Tickets left: {event.availableTickets}</p>
-                        <Form.Group className="mb-3" controlId="ticketCount">
+
+                        <Form.Group className="mb-3">
                             <Form.Label>Number of Tickets</Form.Label>
                             <Form.Control
                                 type="number"
-                                placeholder="Enter quantity"
                                 min="1"
                                 max={event.availableTickets}
                                 value={ticketCount}
                                 onChange={e => {
-                                    let v = e.target.value.replace(/^0+/, '');
+                                    const v = e.target.value.replace(/^0+/, '') || '1';
                                     setTicketCount(v);
                                     setSelectedSeats([]);
                                 }}
@@ -130,7 +163,7 @@ export default function SelectSeatsPage() {
                             {seatLayout.map(row => {
                                 const letter = row[0][0];
                                 return (
-                                    <div key={letter} className="seat-logical-row mb-4">
+                                    <div key={letter} className="seat-logical-row mb-3">
                                         <div className="seat-subrow d-flex flex-wrap">
                                             {row.map(seat => (
                                                 <div
@@ -155,14 +188,34 @@ export default function SelectSeatsPage() {
                     <Col md={4} className="d-flex">
                         <div className="w-100 align-self-start">
                             <EventCard event={event} />
-                            <Button
-                                variant="success"
-                                className="w-100 mt-4"
-                                disabled={numericCount < 1}
-                                onClick={handleProceed}
-                            >
-                                Order and Proceed to Checkout
-                            </Button>
+                            {!isExistingOrder ? (
+                                <>
+                                    <Button
+                                        className="w-100 mt-3"
+                                        onClick={handleAddToCart}
+                                        disabled={numericCount < 1}
+                                    >
+                                        Add to Cart
+                                    </Button>
+                                    <Button
+                                        className="w-100 mt-2"
+                                        variant="success"
+                                        onClick={handleProceed}
+                                        disabled={numericCount < 1}
+                                    >
+                                        Proceed to Checkout
+                                    </Button>
+                                </>
+                            ) : (
+                                <Button
+                                    className="w-100 mt-2"
+                                    variant="success"
+                                    onClick={handleContinueOrder}
+                                    disabled={numericCount < 1}
+                                >
+                                    Complete Order
+                                </Button>
+                            )}
                         </div>
                     </Col>
                 </Row>

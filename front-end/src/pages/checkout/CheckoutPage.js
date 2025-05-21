@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import { Container, Row, Col } from 'react-bootstrap';
 import NavBar from '../../components/NavBar';
 import OrderSummary from './OrderSummary';
 import PaymentForm from './PaymentForm';
@@ -13,8 +11,18 @@ export default function CheckoutPage() {
     const { state } = useLocation();
     const navigate = useNavigate();
 
-    const selectedSeats = state?.selectedSeats || [];
+    const selectedSeats = useMemo(() => state?.selectedSeats || [], [state]);
     const orderId = state?.orderId;
+    const isExistingOrder = state?.isExistingOrder;
+    const ticketQuantity = state?.ticketQuantity;
+
+    useEffect(() => {
+        if (!orderId || selectedSeats.length === 0) {
+            navigate(`/events/${id}/seats`, {
+                state: { orderId, selectedSeats, ticketQuantity, isExistingOrder }
+            });
+        }
+    }, [orderId, selectedSeats, navigate, id, ticketQuantity, isExistingOrder]);
 
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -24,7 +32,7 @@ export default function CheckoutPage() {
         (async () => {
             try {
                 const res = await fetch(`${API_BASE_URL}/events/${id}`);
-                if (!res.ok) throw new Error('Failed to load event');
+                if (!res.ok) throw new Error();
                 setEvent(await res.json());
             } catch (err) {
                 setError(err.message);
@@ -35,18 +43,8 @@ export default function CheckoutPage() {
     }, [id]);
 
     if (loading) return <div>Loading…</div>;
-    if (error) return <div className="text-danger">Error: {error}</div>;
+    if (error) return <div className="text-danger">{error}</div>;
     if (!event) return <div>Event not found.</div>;
-    if (selectedSeats.length === 0 || !orderId) {
-        return (
-            <Container className="my-5">
-                <p>
-                    No seats selected.{' '}
-                    <a href={`/events/${id}/seats`}>Go back to choose seats.</a>
-                </p>
-            </Container>
-        );
-    }
 
     const unitPrice = parseFloat(event.e_ticket_price);
     const total = selectedSeats.length * unitPrice;
@@ -55,7 +53,7 @@ export default function CheckoutPage() {
         <>
             <NavBar />
             <Container className="my-5">
-                <h2 className="mb-4">Checkout for “{event.title}”</h2>
+                <h2>Checkout for “{event.title}”</h2>
                 <Row className="g-4">
                     <Col md={5}>
                         <OrderSummary
@@ -71,6 +69,7 @@ export default function CheckoutPage() {
                             orderId={orderId}
                             selectedSeats={selectedSeats}
                             total={total}
+                            isExistingOrder={isExistingOrder}
                             onSuccess={() => navigate(`/confirmation/${orderId}`)}
                         />
                     </Col>
