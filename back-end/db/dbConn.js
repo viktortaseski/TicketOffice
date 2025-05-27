@@ -321,17 +321,57 @@ dataPool.createTicketsBulk = (tickets) => {
         const values = tickets.map((t) => [
             t.order_id,
             t.event_id,
-            "",
             t.price,
             t.seat_number,
         ]);
 
         conn.query(
             `INSERT INTO Ticket
-         (order_id, event_id, QR_img, price, seat_number)
+         (order_id, event_id, price, seat_number)
        VALUES ?`,
             [values],
             (err, result) => (err ? reject(err) : resolve(result))
+        );
+    });
+};
+
+dataPool.getTicketById = (ticketId) => {
+    return new Promise((resolve, reject) => {
+        conn.query(
+            `SELECT
+                t.ticket_id,
+                t.event_id,
+                t.seat_number,
+                t.price,
+                t.isUsed,
+                e.title      AS event_title,
+                e.date,
+                e.time,
+                e.venue
+             FROM Ticket t
+             JOIN Event e ON t.event_id = e.id_event
+             WHERE t.ticket_id = ?`,
+            [ticketId],
+            (err, results) => {
+                if (err) return reject(err);
+                // return first row or null
+                resolve(results[0] || null);
+            }
+        );
+    });
+};
+
+dataPool.updateTicketById = (ticketId, isUsed) => {
+    return new Promise((resolve, reject) => {
+        conn.query(
+            `UPDATE Ticket
+             SET isUsed = ?
+             WHERE ticket_id = ?`,
+            [isUsed, ticketId],
+            (err, result) => {
+                if (err) return reject(err);
+                resolve(result);
+            }
         );
     });
 };
@@ -343,7 +383,7 @@ dataPool.getTicketsByOrder = (order_id) => {
                 t.ticket_id,
                 t.seat_number,
                 t.price,
-                t.QR_img,
+                t.isUsed,
                 e.title      AS event_title,
                 e.date,
                 e.time,

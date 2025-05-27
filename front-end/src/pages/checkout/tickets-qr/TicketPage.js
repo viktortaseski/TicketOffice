@@ -49,7 +49,7 @@ export default function TicketPage() {
         <>
             <NavBar />
             <Container className="my-5">
-                {ticket.isUsed ? (
+                {!ticket.isUsed ? (
                     <>
                         <h2>Ticket #{ticketId} is valid</h2>
                         <p>You can use this ticket.</p>
