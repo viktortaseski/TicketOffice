@@ -87,6 +87,8 @@ export default function ConfirmationPage() {
             doc.text(`Date: ${new Date(t.date).toLocaleDateString()} @ ${t.time}`, 20, 30);
             doc.text(`Venue: ${t.venue}`, 20, 40);
             doc.text(`Seat: ${t.seat_number}`, 20, 50);
+
+            if (t.event_poster) doc.addImage(t.event_poster, 'PNG', 150, 20, 50, 50);
             if (t.QR_img) doc.addImage(t.QR_img, 'PNG', 20, 60, 50, 50);
         });
         doc.save(`tickets_order_${orderId}.pdf`);
