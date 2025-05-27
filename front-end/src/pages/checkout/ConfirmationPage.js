@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import NavBar from '../../components/NavBar';
+import QRCode from 'qrcode';
 import { apiFetch } from '../../api';
 
 export default function ConfirmationPage() {
@@ -56,7 +57,20 @@ export default function ConfirmationPage() {
                 if (!res.ok) throw new Error('Could not fetch tickets');
                 const { tickets } = await res.json();
 
-                if (isMounted) setTickets(tickets);
+                if (isMounted) {
+                    // turn each ticket into one carrying its JSON-payload QR code
+                    const ticketsWithQR = await Promise.all(
+                        tickets.map(async t => {
+                            const payload = JSON.stringify({
+                                ticketId: t.ticket_id,
+                                isUsed: t.isUsed
+                            });
+                            const qrDataUrl = await QRCode.toDataURL(payload);
+                            return { ...t, qrDataUrl };
+                        })
+                    );
+                    setTickets(ticketsWithQR);
+                }
 
                 // If you have tickets, fetch the event details
                 if (tickets.length > 0) {
@@ -89,7 +103,7 @@ export default function ConfirmationPage() {
             doc.text(`Seat: ${t.seat_number}`, 20, 50);
 
             if (t.event_poster) doc.addImage(t.event_poster, 'PNG', 150, 20, 50, 50);
-            if (t.QR_img) doc.addImage(t.QR_img, 'PNG', 20, 60, 50, 50);
+            if (t.qrDataUrl) doc.addImage(t.qrDataUrl, 'PNG', 20, 60, 50, 50);
         });
         doc.save(`tickets_order_${orderId}.pdf`);
     };
@@ -117,7 +131,7 @@ export default function ConfirmationPage() {
                                     <Card.Title>Seat {t.seat_number}</Card.Title>
                                     <p><strong>Event:</strong> {t.event_title}</p>
                                     <p><strong>Date & Time:</strong> {new Date(t.date).toLocaleDateString()} @ {t.time}</p>
-                                    <img src={t.QR_img} alt="QR code" width={100} />
+                                    <img src={t.qrDataUrl} alt="QR code" width={100} />
                                 </Card.Body>
                             </Card>
                         ))}
