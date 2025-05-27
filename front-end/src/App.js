@@ -13,6 +13,8 @@ import MyCartPage from './pages/checkout/MyCartPage';
 import ConfirmationPage from './pages/checkout/ConfirmationPage';
 import MyEventsPage from './components/create-event/MyEventsPage';
 import EditEventPage from './components/create-event/EditEventPage';
+import ScannerPage from './pages/checkout/tickets-qr/ScannerPage';
+import TicketPage from './pages/checkout/tickets-qr/TicketPage';
 
 const App = () => {
 
@@ -33,6 +35,8 @@ const App = () => {
         <Route path="/cart" element={<MyCartPage />} />
         <Route path="/my-events" element={<MyEventsPage />} />
         <Route path="/edit-event/:id" element={<EditEventPage />} />
+        <Route path="/scan" element={<ScannerPage />} />
+        <Route path="/ticket/:ticketId" element={<TicketPage />} />
       </Routes>
     </BrowserRouter>
   )

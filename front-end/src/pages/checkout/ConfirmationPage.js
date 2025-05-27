@@ -61,10 +61,8 @@ export default function ConfirmationPage() {
                     // turn each ticket into one carrying its JSON-payload QR code
                     const ticketsWithQR = await Promise.all(
                         tickets.map(async t => {
-                            const payload = JSON.stringify({
-                                ticketId: t.ticket_id,
-                                isUsed: t.isUsed
-                            });
+                            // full absolute URL straight into the QR
+                            const payload = `${window.location.origin}/ticket/${t.ticket_id}`;
                             const qrDataUrl = await QRCode.toDataURL(payload);
                             return { ...t, qrDataUrl };
                         })
