@@ -23,9 +23,9 @@ function LoginPage() {
                 body: JSON.stringify({ email, password })
             });
 
-            console.log('Login response status:', res.status);
+
             const result = await res.json();
-            console.log('Login JSON:', result);
+
 
             if (res.ok) {
                 setSuccess('Login successful!');

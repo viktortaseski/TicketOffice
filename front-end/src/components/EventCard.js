@@ -60,11 +60,11 @@ const EventCard = ({ event }) => {
                     </small>
                 </Card.Text>
                 <Card.Text>
-                    <div className="d-flex justify-content-between align-items-center mt-3">
-                        <span className="fw-bold fs-5 text-black">
-                            €{event.e_ticket_price}
-                        </span>
-                    </div>
+
+                    <span className="d-flex justify-content-between align-items-center mt-3 fw-bold fs-5 text-black">
+                        €{event.e_ticket_price}
+                    </span>
+
                 </Card.Text>
             </Card.Body>
         </Card>
