@@ -10,19 +10,25 @@ import theatreIcon from './icons/theatre.png';
 import philharmonyIcon from './icons/philharmony.png';
 import operaIcon from './icons/opera.png';
 import sportIcon from './icons/sport.png';
+import squaresIcon from './icons/squares.png';
+import moreIcon from './icons/more.png';
 
 const categories = [
+    { name: 'All Events', icon: squaresIcon },
     { name: 'Concerts', icon: concertIcon },
-    { name: 'Festivals', icon: festivalIcon },
+    //{ name: 'Festivals', icon: festivalIcon },
     { name: 'Theatres', icon: theatreIcon },
-    { name: 'Philharmony', icon: philharmonyIcon },
+    //{ name: 'Philharmony', icon: philharmonyIcon },
     { name: 'Opera & Ballet', icon: operaIcon },
     { name: 'Sport Events', icon: sportIcon },
+    { name: 'Others', icon: moreIcon }
 ];
 
 // helper to slugify category names, e.g. "Opera & Ballet" → "/opera-&-ballet"
-const toPath = (name) =>
-    '/category/' + name.toLowerCase().replace(/\s+/g, '-');
+const toPath = (name) => {
+    if (name === 'All Events') return '/';
+    return '/category/' + name.toLowerCase().replace(/\s+/g, '-')
+};
 
 const CategorySection = () => (
     <Container className="my-4">

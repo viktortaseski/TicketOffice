@@ -101,7 +101,7 @@ export default function ConfirmationPage() {
             doc.text(`Seat: ${t.seat_number}`, 20, 50);
 
             if (t.event_poster) doc.addImage(t.event_poster, 'PNG', 150, 20, 50, 50);
-            if (t.qrDataUrl) doc.addImage(t.qrDataUrl, 'PNG', 20, 60, 50, 50);
+            if (t.qrDataUrl) doc.addImage(t.qrDataUrl, 'PNG', 50, 70, 100, 100);
         });
         doc.save(`tickets_order_${orderId}.pdf`);
     };
