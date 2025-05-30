@@ -1,4 +1,4 @@
-// src/components/home/Home.js
+/* src/components/home/Home.js */
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
@@ -9,7 +9,8 @@ import EventCard from '../EventCard';
 import API_BASE_URL from '../../api';
 import './home.css';
 
-import gameBanner from '../../assets/gameBanner.jpg'            // Import image
+// New banner image (replace with your chosen asset)
+import newBanner from '../../assets/gameBanner.jpg';
 
 function useQueryParam(name) {
     return new URLSearchParams(useLocation().search).get(name);
@@ -33,7 +34,6 @@ export default function Home() {
                     .filter(ev => ev.title.toLowerCase().includes(query))
                     .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-
                 setItems(sorted);
             } catch (err) {
                 console.error('Error fetching items:', err);
@@ -49,15 +49,21 @@ export default function Home() {
         <>
             <NavBar />
 
-            {/* Promotion Banner */}
-            <div className='promotionDiv'>
-                <img
-                    src={//mainPromotion
-                        gameBanner
-                    }
-                    alt="Promotion Banner"
-                    className='promotionImg'
-                />
+            {/* Full-bleed responsive banner */}
+            <div className="banner-container">
+                <picture>
+                    {/* You can add more <source> tags for different resolutions/formats */}
+                    <source
+                        media="(min-width: 1200px)"
+                        srcSet={newBanner}
+                        type="image/jpeg"
+                    />
+                    <img
+                        src={newBanner}
+                        alt="Promotion Banner"
+                        className="banner-image"
+                    />
+                </picture>
             </div>
 
             <CategorySection />

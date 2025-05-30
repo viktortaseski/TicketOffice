@@ -4,6 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import Card from 'react-bootstrap/Card';
 import noImg from '../assets/noImg.jpg';
 import API_BASE_URL from '../api';
+import './eventcard.css';
+import ticketIcon from '../assets/ticket.png';
+
 
 const EventCard = ({ event }) => {
     const navigate = useNavigate();
@@ -60,7 +63,12 @@ const EventCard = ({ event }) => {
                     </small>
                 </Card.Text>
                 <Card.Text>
-                    <div className="d-flex justify-content-between align-items-center mt-3">
+                    <div className="price-section d-flex align-items-center mt-3">
+                        <img
+                            src={ticketIcon}
+                            alt="Ticket"
+                            className="ticket-icon me-2"
+                        />
                         <span className="fw-bold fs-5 text-black">
                             €{event.e_ticket_price}
                         </span>

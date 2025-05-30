@@ -5,7 +5,8 @@ import NavBar from '../NavBar';
 import EventCard from '../EventCard';
 import API_BASE_URL from '../../api';
 import CategorySection from './CategorySection';
-import mainPromotion from '../../assets/mainPromotion.jpg';
+import newBanner from '../../assets/gameBanner.jpg';
+import './home.css';
 
 export default function CategoryPage() {
     const { categoryName } = useParams();
@@ -39,12 +40,20 @@ export default function CategoryPage() {
     return (
         <>
             <NavBar />
-            <div className='promotionDiv'>
-                <img
-                    src={mainPromotion}
-                    alt="Promotion Banner"
-                    className='promotionImg'
-                />
+            <div className="banner-container">
+                <picture>
+                    {/* You can add more <source> tags for different resolutions/formats */}
+                    <source
+                        media="(min-width: 1200px)"
+                        srcSet={newBanner}
+                        type="image/jpeg"
+                    />
+                    <img
+                        src={newBanner}
+                        alt="Promotion Banner"
+                        className="banner-image"
+                    />
+                </picture>
             </div>
             <CategorySection />
 
