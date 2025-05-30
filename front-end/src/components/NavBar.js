@@ -97,7 +97,7 @@ const NavBar = () => {
                             {userType ? (
                                 <>
                                     <Dropdown.Item as={Link} to="/cart">My Cart</Dropdown.Item>
-                                    <Dropdown.Item as={Link} to="/settings">Settings</Dropdown.Item>
+                                    <Dropdown.Item as={Link} to="/">Settings</Dropdown.Item>
 
                                     {userType === 'Organizer' && (
                                         <>
