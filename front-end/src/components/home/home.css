@@ -117,3 +117,17 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     margin: 0.5rem 0;
 }
+
+.navbar-brand {
+    display: inline-flex !important;
+    align-items: center;
+}
+
+/* Size it, space it, and force it to white */
+.ticket-logo {
+    width: 24px;
+    height: auto;
+    margin-right: 0.5rem;
+    /* if your PNG is black, this will turn it white */
+    filter: brightness(0) invert(1);
+}

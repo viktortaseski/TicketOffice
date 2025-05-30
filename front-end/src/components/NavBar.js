@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Navbar, Container, Nav, Dropdown, Form, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import './home/home.css'
+import ticketIcon from '../assets/ticketOutlined.png';
 
 const NavBar = () => {
     const [userType, setUserType] = useState(null);
@@ -45,8 +46,15 @@ const NavBar = () => {
     return (
         <Navbar bg="dark" variant="dark" expand="lg" className="py-3 sticky-top">
             <Container className="d-flex justify-content-between align-items-center">
-                {/* Brand */}
-                <Navbar.Brand as={Link} to="/">TicketOffice</Navbar.Brand>
+                {/* Brand with ticket icon */}
+                <Navbar.Brand as={Link} to="/">
+                    <img
+                        src={ticketIcon}
+                        alt="Ticket"
+                        className="ticket-logo"
+                    />
+                    TicketOffice
+                </Navbar.Brand>
 
                 <Form
                     onSubmit={handleSearch}
